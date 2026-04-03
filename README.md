@@ -1,51 +1,50 @@
 # 🫀 AI-Based Heart Risk Prediction System
 
-> A **hybrid AI healthcare web application** that combines ECG signal analysis (CNN-LSTM) with clinical risk prediction (Random Forest) for comprehensive heart risk assessment.
+> A **hybrid AI healthcare web application** that combines ECG signal analysis (CNN-LSTM), clinical risk prediction (Random Forest), and a **Large Language Model (Gemini AI)** for comprehensive, human-readable heart risk assessment.
 
 ![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.12+-orange?logo=tensorflow)
-![Scikit--learn](https://img.shields.io/badge/Scikit--learn-1.2+-green?logo=scikit-learn)
+![Scikit-learn](https://img.shields.io/badge/Scikit--learn-1.2+-green?logo=scikit-learn)
 ![Streamlit](https://img.shields.io/badge/Streamlit-1.30+-red?logo=streamlit)
+![Gemini AI](https://img.shields.io/badge/Gemini_AI-2.5_Flash-purple?logo=google)
 
 ---
 
 ## 📋 Overview
 
-This project provides a **real-world inspired AI healthcare system** that analyzes both **ECG signals** and **clinical patient data** to produce a comprehensive heart risk assessment. It combines two AI models using a hybrid fusion approach.
+This project provides a **real-world inspired AI healthcare system** that analyzes both **ECG signals** and **clinical patient data** to produce a highly accurate risk assessment. It combines two mathematical AI models using a hybrid fusion approach, and utilizes an embedded **Agentic AI Assistant** to interpret the results for the patient.
 
 ### Key Features
 
 - 📤 **ECG Upload** — Upload `.csv` / `.npy` files or enter values manually
 - 🩺 **Clinical Input** — 13-feature patient data form (age, BP, cholesterol, etc.)
-- 🧠 **Dual AI Models** — CNN-LSTM (ECG) + Random Forest (Clinical)
+- 🧠 **Dual Machine Learning Models** — CNN-LSTM (ECG) + Random Forest (Clinical)
 - 🔬 **Hybrid Fusion** — Weighted composite risk scoring
-- 📊 **Gauge Chart** — Visual risk score indicator
-- 📈 **Signal Visualization** — Interactive ECG waveform display
+- 👨‍⚕️ **Virtual Cardiologist (Agentic AI)** — Embedded Google Gemini AI chatbot that explains risk output utilizing **Tool Calling / External APIs**.
+- 📊 **Gauge Chart & Visualizations** — Visual risk score indicator and interactive ECG waveform
 - 📜 **Prediction History** — Track past predictions in-session
-- 📥 **Download Reports** — Exportable comprehensive prediction reports
-- 🎨 **Premium UI** — Medical-themed dark interface with animations
+- 📥 **Download Reports** — Exportable comprehensive prediction reports (PDF & TXT)
+- 🎨 **Premium UI** — Medical-themed dark interface with fast rendering
 
 ---
 
 ## 🏗️ Project Structure
 
-```
+```text
 Heart Attack prediction/
 ├── app.py                    # Main Streamlit hybrid web application
-├── utils.py                  # ECG + Clinical preprocessing & prediction helpers
+├── medical_agent.py          # AI Agent logic (Gemini API & Tool Calling)
+├── utils.py                  # ECG + Clinical preprocessing, prediction, formatting helpers
 ├── clinical_model.py         # Clinical model training script
 ├── ecg_model .h5             # Pre-trained CNN-LSTM ECG model
 ├── ecg_model .py             # ECG model training code (reference)
 ├── requirements.txt          # Python dependencies
-├── generate_sample_data.py   # Generate test ECG data
+├── .env                      # API keys and secrets (User created)
 ├── models/                   # Trained clinical model artifacts
 │   ├── clinical_rf_model.pkl
 │   ├── clinical_scaler.pkl
 │   └── clinical_features.pkl
-├── data/                     # Datasets
-│   ├── heart.csv             # Heart Disease clinical dataset
-│   └── mit-bih-.../          # MIT-BIH Arrhythmia Database (reference)
-└── Sample Data/              # Test ECG files (.csv, .npy)
+└── data/                     # Datasets
 ```
 
 ---
@@ -56,6 +55,7 @@ Heart Attack prediction/
 
 - Python 3.9 or higher
 - pip (Python package manager)
+- A free **Google Gemini API Key** (Get one at [Google AI Studio](https://aistudio.google.com/))
 
 ### Installation
 
@@ -64,7 +64,7 @@ Heart Attack prediction/
    cd "/Users/kowshik/Documents/Heart Attack prediction"
    ```
 
-2. **Create and activate virtual environment:**
+2. **Create and activate a virtual environment:**
    ```bash
    python3 -m venv venv
    source venv/bin/activate
@@ -75,9 +75,10 @@ Heart Attack prediction/
    pip install -r requirements.txt
    ```
 
-4. **Train the clinical model:**
-   ```bash
-   python clinical_model.py
+4. **Environment Variables:**
+   Create a `.env` file in the root directory and add your Google Gemini API key:
+   ```env
+   GEMINI_API_KEY=AI...your_api_key_here...
    ```
 
 5. **Run the application:**
@@ -91,38 +92,27 @@ Heart Attack prediction/
 
 ## 🔬 System Architecture
 
-### Module 1: ECG Signal Analysis (CNN-LSTM)
+The application is built on a 4-stage processing pipeline:
 
-| Property        | Value                              |
-|-----------------|-------------------------------------|
-| Architecture    | CNN-LSTM (Conv1D + LSTM + Dense)   |
-| Input Shape     | (200, 1)                           |
-| Output          | Sigmoid (Binary Classification)    |
-| Threshold       | 0.5                                |
-| Training Data   | MIT-BIH Arrhythmia Database        |
-| Normalization   | Z-score (mean=0, std=1)            |
+### Module 1: ECG Signal Analysis (CNN-LSTM)
+- **Architecture**: 1D Convolutional Neural Network + LSTM (Long Short-Term Memory)
+- **Input Object**: 200 array data points 
+- **Output**: Binary Classification (Normal vs. Abnormal)
 
 ### Module 2: Clinical Risk Prediction (Random Forest)
-
-| Property        | Value                              |
-|-----------------|-------------------------------------|
-| Algorithm       | Random Forest (200 trees)          |
-| Features        | 13 clinical parameters             |
-| Output          | Probability (0–1)                  |
-| Training Data   | Heart Disease Dataset (1025 records)|
-| Accuracy        | ~99%                               |
-| Scaling         | StandardScaler                     |
+- **Algorithm**: Random Forest Classifier
+- **Features**: 13 standard clinical parameters from the Cleveland Heart Disease Dataset
+- **Output**: Probability risk percentage (0-100%)
 
 ### Module 3: Hybrid Fusion Logic
+A weighted composite mathematical risk score determining the overall "Risk Level":
+**Composite Score** = 40% × (ECG probability) + 60% × (Clinical probability)
 
-| ECG Result | Clinical Result | Final Risk |
-|------------|-----------------|------------|
-| ⚠️ Abnormal | ⚠️ High Risk   | 🔴 HIGH    |
-| ⚠️ Abnormal | ✅ Low Risk     | 🟠 MEDIUM  |
-| ✅ Normal   | ⚠️ High Risk   | 🟠 MEDIUM  |
-| ✅ Normal   | ✅ Low Risk     | 🟢 LOW     |
-
-**Composite Score** = 0.4 × ECG probability + 0.6 × Clinical probability
+### Module 4: Agentic AI Assistant (Gemini) & External API Tool Calling
+Once the mathematics are processed, the system triggers the `medical_agent.py` module.
+- **Technology**: Google Gemini `gemini-2.5-flash` model.
+- **External Integration**: Uses the `google-generativeai` wrapper to communicate with Google's Cloud API endpoint.
+- **Agentic Workflow**: The agent uses **Tool Calling** (Function Calling). We provide it with specific Python tools (such as checking AHA medical guidelines for cholesterol, or calculating BMI). The LLM autonomously decides *when* to execute these tools to properly answer user queries regarding their predicted heart risk.
 
 ---
 
@@ -148,25 +138,24 @@ Heart Attack prediction/
 
 ## 📊 How to Use
 
-1. **Upload ECG** — Go to Module 1 and upload a `.csv` or `.npy` file with 200 ECG values
-2. **Enter Clinical Data** — Fill in all 13 fields in Module 2
-3. **Run Analysis** — Click "Run Full Hybrid Analysis" (or "Clinical-Only")
-4. **View Results** — See risk level, gauge chart, confidence distribution
-5. **Download Report** — Export the comprehensive prediction report
-6. **Track History** — View all predictions made in the session
+1. **Upload ECG** — Upload a `.csv` or `.npy` file containing exactly 200 ECG values.
+2. **Enter Clinical Data** — Complete the 13 clinical parameter fields.
+3. **Run Analysis** — Click "Run Full Hybrid Analysis".
+4. **Consult Dr. AI** — Scroll to the bottom of the page to chat with the integrated Virtual Cardiologist to understand *why* you received your specific score.
+5. **Download Report** — Export the statistical breakdown as a PDF.
 
 ---
 
 ## ⚠️ Disclaimer
 
-This application is developed for **educational and research purposes only**. It is **NOT** intended for clinical use and should not be used as a substitute for professional medical diagnosis, advice, or treatment. Always consult a qualified healthcare provider.
+This application is developed for **educational and research purposes only**. It is **NOT** intended for clinical use and should not be used as a substitute for professional medical diagnosis, advice, or treatment. The AI model responses may occasionally be inaccurate. Always consult a qualified healthcare provider.
 
 ---
 
 ## 📝 License
 
-This project is created for academic purposes as a final-year AI Healthcare project.
+Created for academic purposes as a final-year AI Healthcare project.
 
 ---
 
-*Built with ❤️ using TensorFlow, Scikit-learn, and Streamlit*
+*Built with ❤️ using TensorFlow, Scikit-learn, Google Gemini AI, and Streamlit.*
